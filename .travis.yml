@@ -9,12 +9,24 @@ script:
   - docker run -e CI=true bmshamsnahid/react-test npm test -- --coverage
 
 after_success:
-  - docker build -t bmshamsnahid/ix-multi-client ./client
-  - docker build -t bmshamsnahid/ix-multi-nginx ./nginx
-  - docker build -t bmshamsnahid/ix-multi-server ./server
-  - docker build -t bmshamsnahid/ix-multi-worker ./worker
+  - docker build -t bmshamsnahid/multi-client ./client
+  - docker build -t bmshamsnahid/multi-nginx ./nginx
+  - docker build -t bmshamsnahid/multi-server ./server
+  - docker build -t bmshamsnahid/multi-worker ./worker
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
-  - docker push bmshamsnahid/ix-multi-client
-  - docker push bmshamsnahid/ix-multi-nginx
-  - docker push bmshamsnahid/ix-multi-server
-  - docker push bmshamsnahid/ix-multi-worker
+  - docker push bmshamsnahid/multi-client
+  - docker push bmshamsnahid/multi-nginx
+  - docker push bmshamsnahid/multi-server
+  - docker push bmshamsnahid/multi-worker
+
+deploy:
+  provider: elasticbeanstalk
+  region: "ap-south-1"
+  app: "multi-docker"
+  env: "MultiDocker-env"
+  bucket_name: "elasticbeanstalk-ap-south-1-366735605679"
+  bucket_path: "docker-multi"
+  on:
+    branch: master
+  access_key_id: $AWS_ACCESS_KEY
+  secret_access_key: $AWS_SECRET_KEY
